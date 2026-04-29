@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pep AI — Регистрация и чат</title>
+    <title>Pep AI — Мгновенные ответы</title>
     <style>
         * {
             margin: 0;
@@ -39,8 +39,14 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-logo {
@@ -87,7 +93,6 @@
             margin-bottom: 8px;
             display: block;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .form-input {
@@ -357,28 +362,6 @@
             border-bottom-left-radius: 4px;
         }
 
-        .typing-indicator {
-            display: flex;
-            gap: 5px;
-            padding: 8px 0;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: typingAnim 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typingAnim {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-6px); opacity: 1; }
-        }
-
         .input-area {
             padding: 16px 24px 24px 24px;
             background: #ffffff;
@@ -440,7 +423,7 @@
 </head>
 <body>
 
-<!-- СТРАНИЦА 1: РЕГИСТРАЦИЯ/ВХОД -->
+<!-- СТРАНИЦА 1: РЕГИСТРАЦИЯ -->
 <div id="authPage" class="auth-page">
     <div class="auth-card">
         <div class="auth-logo">
@@ -461,7 +444,7 @@
                 <input type="password" id="loginPassword" class="form-input" placeholder="••••••">
                 <span class="error-text" id="loginPasswordError"></span>
             </div>
-            <button id="doLoginBtn" class="btn btn-primary">🔐 Войти</button>
+            <button id="doLoginBtn" class="btn btn-primary">Войти</button>
             <div class="switch-link" id="showRegisterBtn">Нет аккаунта? <span>Зарегистрироваться</span></div>
         </div>
 
@@ -481,7 +464,7 @@
                 <input type="password" id="regPassword" class="form-input" placeholder="••••••">
                 <span class="error-text" id="regPasswordError"></span>
             </div>
-            <button id="doRegisterBtn" class="btn btn-primary">📝 Зарегистрироваться</button>
+            <button id="doRegisterBtn" class="btn btn-primary">Зарегистрироваться</button>
             <div class="switch-link" id="showLoginBtn">Уже есть аккаунт? <span>Войти</span></div>
         </div>
     </div>
@@ -506,12 +489,12 @@
 
         <div class="main-chat">
             <div class="chat-header">
-                <div class="model-badge">🧠 Pep AI • работает онлайн</div>
+                <div class="model-badge">🧠 Pep AI • Мгновенные ответы</div>
             </div>
             <div class="messages-area" id="chatMessagesArea">
                 <div class="message bot">
                     <div class="avatar avatar-bot">🧠</div>
-                    <div class="bubble bubble-bot">Добро пожаловать! Чем могу помочь?</div>
+                    <div class="bubble bubble-bot">Привет! Я Пеп. Задавай любые вопросы — отвечаю мгновенно! ✨</div>
                 </div>
             </div>
             <div class="input-area">
@@ -520,13 +503,13 @@
                     <button id="chatSendBtn" class="btn send-btn">Отправить</button>
                 </div>
             </div>
-            <div class="status-bar">🟢 Готов к работе</div>
+            <div class="status-bar">🟢 Готов к работе • Мгновенные ответы</div>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== РАБОТА С ПОЛЬЗОВАТЕЛЯМИ ==========
+    // ========== ПОЛЬЗОВАТЕЛИ ==========
     let currentUser = null;
     let currentChatId = null;
     let chats = {};
@@ -559,11 +542,8 @@
     function getUserChats(email) { const c = localStorage.getItem(`pep_chats_${email}`); return c ? JSON.parse(c) : {}; }
     function saveUserChats(email, uc) { localStorage.setItem(`pep_chats_${email}`, JSON.stringify(uc)); }
     
-    // ========== AI ОТВЕТЫ (имитация работы) ==========
-    async function getAIResponse(message) {
-        // Простая имитация ответа AI
-        await new Promise(r => setTimeout(r, 500));
-        
+    // ========== МГНОВЕННЫЕ ОТВЕТЫ AI (без задержек) ==========
+    function getAIResponse(message) {
         const lowerMsg = message.toLowerCase();
         
         if (lowerMsg.includes('привет') || lowerMsg.includes('здравствуй')) {
@@ -573,16 +553,22 @@
             return "```python\n# Пример кода на Python\ndef hello():\n    print('Привет, мир!')\n\nhello()\n```";
         }
         if (lowerMsg.includes('как дела')) {
-            return "У меня всё отлично! Благодарю за вопрос. А как твои дела? 😊";
+            return "У меня всё отлично! Спасибо, что спросил. А у тебя как? 😊";
         }
         if (lowerMsg.includes('спасибо')) {
             return "Пожалуйста! Рад был помочь 🤗";
         }
         if (lowerMsg.includes('помощь')) {
-            return "Я могу:\n- Отвечать на вопросы\n- Писать код на Python\n- Помогать с идеями\n- Просто болтать\n\nЧто ты хочешь?";
+            return "Я могу:\n• Отвечать на вопросы\n• Писать код на Python\n• Помогать с идеями\n• Просто болтать\n\nЧто тебя интересует?";
+        }
+        if (lowerMsg.includes('кто ты')) {
+            return "Я Пеп — твой виртуальный AI-помощник. Работаю 24/7 и отвечаю мгновенно! 🚀";
+        }
+        if (lowerMsg.includes('пока') || lowerMsg.includes('до свидания')) {
+            return "До встречи! Буду рад помочь снова 👋";
         }
         
-        return "Интересно! Расскажи подробнее. Я здесь, чтобы помочь ✨";
+        return "Понял! Расскажи подробнее, и я помогу тебе ✨";
     }
     
     // ========== ЛОГИКА ЧАТА ==========
@@ -594,7 +580,7 @@
             id: cid, 
             title: `Чат ${new Date().toLocaleString()}`, 
             created: Date.now(), 
-            messages: [{ role: 'bot', content: 'Чем могу помочь? 😊' }] 
+            messages: [{ role: 'bot', content: 'Привет! Я Пеп. Задавай любые вопросы — отвечаю мгновенно! ✨' }] 
         };
         saveUserChats(currentUser.email, chats);
         renderChatList();
@@ -609,7 +595,7 @@
     }
     
     function deleteChat(cid) {
-        if (confirm('Удалить чат?')) {
+        if (confirm('Удалить этот чат?')) {
             delete chats[cid];
             saveUserChats(currentUser.email, chats);
             const ids = Object.keys(chats);
@@ -671,21 +657,6 @@
         return s.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); 
     }
     
-    function showTyping() { 
-        const c = document.getElementById('chatMessagesArea'); 
-        const d = document.createElement('div'); 
-        d.className = 'message bot'; 
-        d.id = 'typingIndicator'; 
-        d.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot typing-indicator"><span></span><span></span><span></span></div>`; 
-        c.appendChild(d); 
-        c.scrollTop = c.scrollHeight; 
-    }
-    
-    function removeTyping() { 
-        const el = document.getElementById('typingIndicator'); 
-        if (el) el.remove(); 
-    }
-    
     async function sendMessage() {
         if (isLoading || !currentUser || !currentChatId) return;
         const inp = document.getElementById('chatInput');
@@ -697,41 +668,21 @@
         addMessageToUI('user', text, true);
         
         isLoading = true;
-        document.getElementById('chatSendBtn').disabled = true;
-        showTyping();
+        const sendBtn = document.getElementById('chatSendBtn');
+        sendBtn.disabled = true;
+        sendBtn.textContent = '...';
         
-        try {
-            removeTyping();
-            const cont = document.getElementById('chatMessagesArea');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message bot';
-            msgDiv.id = 'streamingMessage';
-            msgDiv.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot" id="streamBubble">🤔 Думаю...</div>`;
-            cont.appendChild(msgDiv);
-            const bubble = document.getElementById('streamBubble');
-            
-            const reply = await getAIResponse(text);
-            
-            if (bubble) bubble.innerText = reply;
-            msgDiv.removeAttribute('id');
-            
-            if (currentChatId && chats[currentChatId]) { 
-                chats[currentChatId].messages.push({ role: 'bot', content: reply }); 
-                saveUserChats(currentUser.email, chats); 
-            }
-        } catch(err) { 
-            removeTyping(); 
-            const errDiv = document.getElementById('streamingMessage'); 
-            if(errDiv) errDiv.remove(); 
-            addMessageToUI('bot', '✨ Давай продолжим!', true); 
-        } finally { 
-            isLoading = false; 
-            document.getElementById('chatSendBtn').disabled = false; 
-            inp.focus(); 
-        }
+        // МГНОВЕННЫЙ ОТВЕТ (без задержки)
+        const reply = getAIResponse(text);
+        addMessageToUI('bot', reply, true);
+        
+        isLoading = false;
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Отправить';
+        inp.focus();
     }
     
-    // ========== ПЕРЕКЛЮЧЕНИЕ МЕЖДУ СТРАНИЦАМИ ==========
+    // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ==========
     function showAuthPage() { 
         document.getElementById('authPage').style.display = 'flex'; 
         document.getElementById('chatPage').style.display = 'none'; 
@@ -850,10 +801,8 @@
     document.getElementById('chatSendBtn').onclick = sendMessage;
     
     const chatInput = document.getElementById('chatInput');
-    if (chatInput) {
-        chatInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
-        chatInput.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
-    }
+    chatInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+    chatInput.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
     
     showAuthPage();
     showLoginForm();

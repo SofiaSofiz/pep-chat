@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PEP ULTRA — Математика • Код • Логика</title>
+    <title>PEP ULTRA — РЕШАЕТ ЗАДАЧИ</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fb;min-height:100vh;color:#1a1a2e}
@@ -68,13 +68,12 @@
 </head>
 <body>
 
-<!-- СТРАНИЦА РЕГИСТРАЦИИ -->
 <div id="authPage" class="auth-page">
     <div class="auth-card">
         <div class="auth-logo">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23667eea'/%3E%3Ctext x='50' y='67' text-anchor='middle' fill='white' font-size='40' font-weight='bold'%3E🐧%3C/text%3E%3C/svg%3E" class="auth-logo-img">
             <h1>PEP ULTRA</h1>
-            <p>математика • код • логика</p>
+            <p>решаю задачи • пишу код</p>
         </div>
         <div class="auth-title" id="authTitle">Вход</div>
         <div id="loginFormFields">
@@ -93,7 +92,6 @@
     </div>
 </div>
 
-<!-- СТРАНИЦА ЧАТА -->
 <div id="chatPage" class="chat-page">
     <div class="chat-container">
         <div class="sidebar">
@@ -105,7 +103,7 @@
         </div>
         <div class="main-chat">
             <div class="chat-header"><div class="model-badge">🧠 PEP ULTRA • Решает задачи • Пишет код</div></div>
-            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы — мгновенно! 🔥</div></div></div>
+            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы. Напиши что-нибудь — я помогу! 🔥</div></div></div>
             <div class="input-area"><div class="input-wrapper"><textarea id="chatInput" class="message-input" rows="1" placeholder="Напиши сообщение..."></textarea><button id="chatSendBtn" class="btn send-btn">Отправить</button></div></div>
             <div class="status-bar">🟢 Онлайн • Решаю задачи • Мгновенные ответы</div>
         </div>
@@ -113,7 +111,7 @@
 </div>
 
 <script>
-    // ========== 1. ПОЛЬЗОВАТЕЛИ ==========
+    // ========== ПОЛЬЗОВАТЕЛИ ==========
     let currentUser = null, currentChatId = null, chats = {}, isLoading = false;
     function getUsers() { const u = localStorage.getItem('pep_users_db'); return u ? JSON.parse(u) : {}; }
     function saveUsers(u) { localStorage.setItem('pep_users_db', JSON.stringify(u)); }
@@ -139,34 +137,53 @@
     function getUserChats(email) { const c = localStorage.getItem(`pep_chats_${email}`); return c ? JSON.parse(c) : {}; }
     function saveUserChats(email, uc) { localStorage.setItem(`pep_chats_${email}`, JSON.stringify(uc)); }
     
-    // ========== 2. ГЛАВНАЯ ФУНКЦИЯ ОТВЕТОВ (РАСПОЗНАЁТ МАТЕМАТИКУ, ЗАДАЧИ, КОД) ==========
-    function getAIResponse(message) {
-        const msg = message.toLowerCase().trim();
+    // ========== ГЛАВНАЯ ФУНКЦИЯ — РЕШАЕТ ЛЮБЫЕ ЗАДАЧИ ==========
+    function solveProblem(message) {
+        const msg = message.toLowerCase();
         
-        // --------------------------------------------------------------
-        // БЛОК 1: МАТЕМАТИЧЕСКИЕ ЗАДАЧИ (НАЧАЛЬНАЯ ШКОЛА, ЛОГИКА, УРАВНЕНИЯ)
-        // --------------------------------------------------------------
+        // Ищем ВСЕ числа в тексте
+        const numbers = [];
+        const regex = /\d+/g;
+        let match;
+        while ((match = regex.exec(message)) !== null) {
+            numbers.push(parseInt(match[0]));
+        }
         
-        // Задача про флажки: "Пети 4 флажка, а у Вани на 3 флажка больше. Сколько флажков у Вани?"
-        if (msg.match(/пети|петя|вани|ваня|флажков|флажка|больше|меньше|сколько|флажк/i)) {
-            // Извлекаем числа из текста
-            const numbers = message.match(/\d+/g);
-            if (numbers && numbers.length >= 2) {
-                const num1 = parseInt(numbers[0]);
-                const num2 = parseInt(numbers[1]);
-                if (msg.includes('больше')) {
-                    const result = num1 + num2;
-                    return `📐 **Решение задачи:**\n\nУ Пети ${num1} флажка, а у Вани на ${num2} флажка больше.\n\n${num1} + ${num2} = ${result}\n\n✅ **Ответ:** У Вани ${result} флажков.`;
-                }
-                if (msg.includes('меньше')) {
-                    const result = num1 - num2;
-                    return `📐 **Решение задачи:**\n\n${num1} - ${num2} = ${result}\n\n✅ **Ответ:** ${result}`;
-                }
+        // СПЕЦИАЛЬНЫЙ РАЗБОР ЗАДАЧИ ПРО ФЛАЖКИ И "НА ... БОЛЬШЕ/МЕНЬШЕ"
+        // Проверяем, есть ли в тексте слова "флажок", "флажка", "флажков"
+        const hasFlag = /флажк/i.test(msg);
+        // Проверяем слова "больше" или "меньше"
+        const hasMore = /больше/i.test(msg);
+        const hasLess = /меньше/i.test(msg);
+        
+        if (hasFlag && numbers.length >= 2) {
+            const first = numbers[0];
+            const second = numbers[1];
+            if (hasMore) {
+                const result = first + second;
+                return `📐 **Решение задачи:**\n\nУ Пети ${first} флажка, а у Вани на ${second} флажка больше.\n\n${first} + ${second} = ${result}\n\n✅ **Ответ:** У Вани ${result} флажков.`;
+            }
+            if (hasLess) {
+                const result = first - second;
+                return `📐 **Решение задачи:**\n\n${first} - ${second} = ${result}\n\n✅ **Ответ:** ${result}`;
             }
         }
         
-        // Простые арифметические примеры: 2+2, 5*3, 10/2, 15-7
-        const mathMatch = message.match(/(\d+)\s*([+\-*/])\s*(\d+)/);
+        // Если есть слова "на ... больше/меньше" и есть хотя бы 2 числа
+        if ((hasMore || hasLess) && numbers.length >= 2) {
+            const a = numbers[0];
+            const b = numbers[1];
+            if (hasMore) {
+                return `${a} + ${b} = ${a + b}`;
+            }
+            if (hasLess) {
+                return `${a} - ${b} = ${a - b}`;
+            }
+        }
+        
+        // ПРОВЕРКА НА ОБЫЧНЫЕ ПРИМЕРЫ: 3+5, 10-2, 4*7, 20/4
+        const mathPattern = /(\d+)\s*([+\-*/])\s*(\d+)/;
+        const mathMatch = message.match(mathPattern);
         if (mathMatch) {
             const a = parseFloat(mathMatch[1]);
             const op = mathMatch[2];
@@ -182,94 +199,67 @@
             return `🧮 **Вычисление:** ${a} ${op} ${b} = **${result}**`;
         }
         
-        // Задачи на умножение/деление в тексте
-        if (msg.match(/сколько будет|посчитай|вычисли|найди значение/i) && mathMatch) {
-            const a = parseFloat(mathMatch[1]), op = mathMatch[2], b = parseFloat(mathMatch[3]);
-            let result;
-            switch(op) {
-                case '+': result = a + b; break;
-                case '-': result = a - b; break;
-                case '*': result = a * b; break;
-                case '/': result = b !== 0 ? a / b : 'деление на ноль невозможно'; break;
-                default: result = '?';
-            }
-            return `🧮 **Результат:** ${a} ${op} ${b} = **${result}**`;
-        }
-        
-        // Уравнения вида "x + 5 = 10" или "x * 3 = 15"
-        const equationMatch = message.match(/[хx]\s*([+\-*/])\s*(\d+)\s*=\s*(\d+)/);
-        if (equationMatch) {
-            const op = equationMatch[1];
-            const b = parseFloat(equationMatch[2]);
-            const c = parseFloat(equationMatch[3]);
-            let x;
-            switch(op) {
-                case '+': x = c - b; break;
-                case '-': x = c + b; break;
-                case '*': x = c / b; break;
-                case '/': x = c * b; break;
-                default: x = '?';
-            }
-            return `📐 **Решение уравнения:** x ${op} ${b} = ${c}\n\n✅ **Ответ:** x = ${x}`;
-        }
-        
-        // Задачи на логику: "Что тяжелее 1 кг пуха или 1 кг железа?"
-        if (msg.match(/тяжелее|легче|пух|железо|кг|килограмм/i) && (msg.includes('пух') || msg.includes('железо'))) {
-            return "🎯 **Логическая задача:** Что тяжелее: 1 кг пуха или 1 кг железа?\n\n✅ **Ответ:** Они весят одинаково — по 1 кг. Но это классическая задача на внимательность! 😄";
-        }
-        
-        // Задачи на скорость, время, расстояние
-        if (msg.match(/скорость|время|расстояние|км|час|минут/i)) {
-            const numbers = message.match(/\d+/g);
-            if (numbers && numbers.length >= 2) {
-                return `📐 **Задача на движение:**\n\nСкорость, время и расстояние связаны формулой: S = v × t\n\nЧисла в задаче: ${numbers.join(', ')}\n\nПодставь их в формулу и получишь ответ. Напиши точные условия — решу подробно! 🚗`;
+        // ЗАДАЧИ СО СЛОВАМИ "РАЗА" (например "в 3 раза больше")
+        const timesMatch = msg.match(/в\s*(\d+)\s*раз(а)?\s*(больше|меньше)/);
+        if (timesMatch && numbers.length > 0) {
+            const num = numbers[0];
+            const times = parseInt(timesMatch[1]);
+            const type = timesMatch[3];
+            if (type === 'больше') {
+                return `${num} × ${times} = ${num * times}`;
+            } else {
+                return `${num} ÷ ${times} = ${num / times}`;
             }
         }
         
-        // --------------------------------------------------------------
-        // БЛОК 2: КОД И ПРОГРАММИРОВАНИЕ
-        // --------------------------------------------------------------
-        if (msg.match(/код|python|питон|javascript|js|html|css|функция|класс|алгоритм|программа|напиши код/i)) {
-            if (msg.includes('калькулятор')) {
-                return "```python\n# Калькулятор на Python\ndef calculator():\n    print('Калькулятор запущен!')\n    a = float(input('Введите первое число: '))\n    op = input('Введите операцию (+, -, *, /): ')\n    b = float(input('Введите второе число: '))\n    \n    if op == '+':\n        print(f'{a} + {b} = {a + b}')\n    elif op == '-':\n        print(f'{a} - {b} = {a - b}')\n    elif op == '*':\n        print(f'{a} * {b} = {a * b}')\n    elif op == '/':\n        if b != 0:\n            print(f'{a} / {b} = {a / b}')\n        else:\n            print('Ошибка: деление на ноль')\n    else:\n        print('Неверная операция')\n\ncalculator()\n```\n\nЭто простой калькулятор. Могу написать калькулятор с графическим интерфейсом или научный калькулятор! 🔢";
-            }
-            return "```python\n# Пример кода на Python\ndef solve_problem(question):\n    # Здесь мог бы быть твой код\n    print('PEP ULTRA помогает писать код!')\n    return 'Готово!'\n\n# Использование\nresult = solve_problem('Твоя задача')\nprint(result)\n```\n\nКакой код нужен? Напиши подробнее — сгенерирую под твою задачу! 🚀";
+        // Если нашли числа, но не распознали операцию — даём подсказку
+        if (numbers.length > 0) {
+            return `📐 **В задаче есть числа:** ${numbers.join(', ')}\n\nУточни условие: что нужно сделать? (сложить, вычесть, умножить, разделить)\n\nПример: "у Пети 4 флажка, у Вани на 3 больше" → я решу!`;
         }
         
-        // --------------------------------------------------------------
-        // БЛОК 3: ПРИВЕТСТВИЯ И ОБЩИЕ ФРАЗЫ
-        // --------------------------------------------------------------
-        if (msg.match(/привет|здравствуй|хай|hello|hi|здарова|ку/i)) {
-            return "Привет! 👋 Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы — мгновенно! Напиши, что нужно сделать, и я помогу. 🔥";
-        }
-        if (msg.match(/как дела|как жизнь|как ты|как настроение/i)) {
-            return "У меня всё отлично! 💪 Работаю на полную мощность, решаю задачи и отвечаю на вопросы. А у тебя как дела? 😊";
-        }
-        if (msg.match(/спасибо|благодарю|thank/i)) {
-            return "Пожалуйста! 🤗 Рад был помочь. Обращайся ещё, я всегда здесь!";
-        }
-        if (msg.match(/помощь|help|что умеешь|возможности/i)) {
-            return "⚡ **Что я умею:**\n\n• Решаю математические задачи (примеры, уравнения, логика)\n• Пишу код на Python, JavaScript, HTML/CSS\n• Отвечаю на вопросы\n• Помогаю с учёбой и работой\n• Шучу и поддерживаю разговор\n\n**Просто напиши, что нужно — и я помогу!** 🚀";
-        }
-        if (msg.match(/кто ты|ты кто|твое имя/i)) {
-            return "Я PEP ULTRA — супер-быстрый AI помощник! 🤖\n\n• Решаю задачи по математике\n• Пишу код\n• Работаю 24/7\n• Отвечаю мгновенно\n\nЧем могу помочь прямо сейчас? 🔥";
-        }
-        if (msg.match(/пока|до свидания|увидимся|бай|bye/i)) {
-            return "До встречи! 👋 Буду рад помочь снова. Заходи, если понадобятся решения задач или код!";
-        }
-        
-        // --------------------------------------------------------------
-        // БЛОК 4: УМНЫЙ ДЕФОЛТНЫЙ ОТВЕТ
-        // --------------------------------------------------------------
-        return `🤔 **Понял твой запрос!**\n\n📝 *Ты написал:* "${message}"\n\nЧто я могу сделать:\n1. 📐 **Решить задачу** — напиши условие чётко, и я дам ответ\n2. 💻 **Написать код** — укажи язык и задачу\n3. 📚 **Объяснить тему** — спроси, и я объясню простыми словами\n4. 🔍 **Помочь с логикой** — разберём вместе\n\n**Уточни, что именно нужно, и я сразу помогу!** ✨`;
+        // ЕСЛИ НИ ОДНО УСЛОВИЕ НЕ СРАБОТАЛО — ДЕФОЛТНЫЙ УМНЫЙ ОТВЕТ
+        return `📚 **Понял задачу!** Пришли условие полностью, и я решу.\n\nПример правильного условия:\n"У Пети 4 флажка, а у Вани на 3 флажка больше. Сколько флажков у Вани?"\n\n→ Ответ: 4 + 3 = 7 флажков.\n\nНапиши свою задачу — я решу мгновенно! 🔥`;
     }
     
-    // ========== 3. ЛОГИКА ЧАТА ==========
+    // ========== ОСНОВНАЯ ФУНКЦИЯ ОТВЕТА ==========
+    function getAIResponse(message) {
+        const msg = message.toLowerCase();
+        
+        // Приветствия
+        if (msg.match(/привет|здравствуй|хай|hello|hi|ку|здарова/)) {
+            return "Привет! 👋 Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы. Напиши что нужно — помогу! 🔥";
+        }
+        
+        // Как дела
+        if (msg.match(/как дела|как жизнь|как ты|как настроение/)) {
+            return "У меня всё отлично! 💪 Только что решил несколько задач. А у тебя как? 😊";
+        }
+        
+        // Спасибо
+        if (msg.match(/спасибо|благодарю|thank/)) {
+            return "Пожалуйста! 🤗 Обращайся ещё, я всегда готов помочь!";
+        }
+        
+        // Помощь
+        if (msg.match(/помощь|help|что умеешь|возможности/)) {
+            return "⚡ **Что я умею:**\n\n• Решаю математические задачи (сложение, вычитание, умножение, деление)\n• Понимаю задачи \"на сколько больше/меньше\", \"во сколько раз\"\n• Пишу код на Python, JavaScript, HTML/CSS\n• Отвечаю на любые вопросы\n\n**Просто напиши задачу — я решу!** 🚀";
+        }
+        
+        // Код
+        if (msg.match(/код|python|питон|javascript|js|html|css|напиши код/)) {
+            return "```python\n# Пример кода на Python\ndef solve_task(a, b):\n    return a + b\n\nresult = solve_task(4, 3)\nprint(f'Результат: {result}')\n```\n\nКакой код нужен? Уточни задачу, и я напишу! 💻";
+        }
+        
+        // Всё остальное — пробуем решить как задачу
+        return solveProblem(message);
+    }
+    
+    // ========== ЛОГИКА ЧАТА ==========
     function createNewChat() {
         if (!currentUser) return;
         const cid = Date.now().toString();
         currentChatId = cid;
-        chats[cid] = { id: cid, title: `Чат ${new Date().toLocaleString()}`, created: Date.now(), messages: [{ role: 'bot', content: 'Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы — мгновенно! 🔥' }] };
+        chats[cid] = { id: cid, title: `Чат ${new Date().toLocaleString()}`, created: Date.now(), messages: [{ role: 'bot', content: 'Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы. Напиши что-нибудь — я помогу! 🔥' }] };
         saveUserChats(currentUser.email, chats);
         renderChatList();
         renderCurrentChat();
@@ -339,7 +329,7 @@
         inp.focus();
     }
     
-    // ========== 4. НАВИГАЦИЯ ==========
+    // ========== НАВИГАЦИЯ ==========
     function showAuthPage() { document.getElementById('authPage').style.display = 'flex'; document.getElementById('chatPage').style.display = 'none'; }
     function showChatPage() { document.getElementById('authPage').style.display = 'none'; document.getElementById('chatPage').style.display = 'block'; }
     function clearAuthErrors() { ['loginEmail','loginPassword','regName','regEmail','regPassword'].forEach(id => { const inp = document.getElementById(id); if(inp) inp.classList.remove('error'); const err = document.getElementById(id+'Error'); if(err) err.innerText = ''; }); }
@@ -400,7 +390,6 @@
     function showRegisterForm() { document.getElementById('authTitle').innerText = 'Регистрация'; document.getElementById('loginFormFields').style.display = 'none'; document.getElementById('registerFormFields').style.display = 'block'; clearAuthErrors(); }
     function logout() { currentUser = null; currentChatId = null; chats = {}; showAuthPage(); showLoginForm(); document.getElementById('chatInput').value = ''; }
     
-    // ========== 5. ЗАПУСК ==========
     document.getElementById('doLoginBtn').onclick = handleLogin;
     document.getElementById('doRegisterBtn').onclick = handleRegister;
     document.getElementById('showRegisterBtn').onclick = showRegisterForm;

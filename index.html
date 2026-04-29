@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pep AI — Регистрация • Бесплатный чат</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pep AI — Регистрация</title>
     <style>
         * {
             margin: 0;
@@ -12,10 +12,54 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
             background: #f5f7fb;
             min-height: 100vh;
             color: #1a1a2e;
+        }
+
+        /* Адаптив для телефона */
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column !important;
+            }
+            .sidebar {
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid #e8ecf0 !important;
+                max-height: 280px !important;
+            }
+            .chat-list {
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                gap: 8px !important;
+                padding: 12px !important;
+            }
+            .chat-item {
+                min-width: 140px !important;
+                flex-shrink: 0 !important;
+            }
+            .main-chat {
+                height: calc(100vh - 280px) !important;
+            }
+            .bubble {
+                max-width: 85% !important;
+                font-size: 0.9rem !important;
+            }
+            .messages-area {
+                padding: 16px !important;
+            }
+            .input-area {
+                padding: 12px 16px 20px 16px !important;
+            }
+            .chat-header {
+                padding: 12px 16px !important;
+            }
+            .logo-img {
+                width: 55px !important;
+                height: 55px !important;
+            }
         }
 
         .app {
@@ -25,30 +69,42 @@
             background: #f5f7fb;
         }
 
+        /* Сайдбар */
         .sidebar {
             width: 300px;
             background: #ffffff;
             border-right: 1px solid #e8ecf0;
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
         }
 
         .logo-area {
-            padding: 28px 24px;
+            padding: 24px 20px;
             border-bottom: 1px solid #eef2f6;
             text-align: center;
         }
 
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 2px solid #2196f3;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
         .logo-area h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #1a1a2e;
         }
 
         .logo-area p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #868e96;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .online-badge {
@@ -57,21 +113,26 @@
             color: #2e7d32;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
+        /* Формы */
         .auth-section {
             padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .info-box {
             background: #e3f2fd;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 0.75rem;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 0.8rem;
             color: #1565c0;
             text-align: center;
         }
@@ -87,33 +148,36 @@
             margin-bottom: 6px;
             display: block;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 14px 16px;
             background: #f8f9fa;
             border: 1px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            border-radius: 14px;
+            font-size: 1rem;
             font-family: inherit;
             outline: none;
+            transition: all 0.2s;
         }
 
         .form-input:focus {
             border-color: #2196f3;
             background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.1);
         }
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: #1a1a2e;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -124,30 +188,32 @@
 
         .btn-primary:hover {
             background: #1976d2;
+            transform: translateY(-1px);
         }
 
         .switch-link {
             text-align: center;
-            margin-top: 16px;
-            font-size: 0.8rem;
+            margin-top: 20px;
+            font-size: 0.85rem;
             color: #868e96;
             cursor: pointer;
         }
 
         .switch-link span {
             color: #2196f3;
-            font-weight: 500;
+            font-weight: 600;
         }
 
+        /* Панель пользователя */
         .user-card {
             background: #f8f9fa;
             border-radius: 16px;
             padding: 16px;
-            margin-bottom: 20px;
+            margin: 16px;
         }
 
         .user-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1rem;
             color: #1a1a2e;
         }
@@ -158,28 +224,32 @@
             margin-top: 4px;
         }
 
-        .logout-btn {
-            background: #fff5f5;
-            color: #e03131;
-            border: 1px solid #ffe3e3;
-            margin-top: 12px;
+        .new-chat-btn, .logout-btn {
+            margin: 0 16px 12px 16px;
+            width: calc(100% - 32px);
         }
 
         .new-chat-btn {
             background: #f1f3f5;
             color: #1a1a2e;
-            margin-bottom: 12px;
         }
 
+        .logout-btn {
+            background: #fff5f5;
+            color: #e03131;
+            border: 1px solid #ffe3e3;
+        }
+
+        /* Список чатов */
         .chat-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0 16px 16px 16px;
+            padding: 12px;
         }
 
         .chat-item {
             background: #f8f9fa;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
@@ -188,6 +258,7 @@
 
         .chat-item:hover {
             background: #f1f3f5;
+            transform: translateX(4px);
         }
 
         .chat-item.active {
@@ -206,6 +277,7 @@
             margin-top: 4px;
         }
 
+        /* Основной чат */
         .main-chat {
             flex: 1;
             display: flex;
@@ -214,44 +286,40 @@
         }
 
         .chat-header {
-            padding: 20px 32px;
+            padding: 16px 24px;
             border-bottom: 1px solid #eef2f6;
+            background: #ffffff;
         }
 
         .model-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 14px;
             background: #e3f2fd;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 0.7rem;
             color: #1976d2;
             font-weight: 500;
         }
 
+        /* Сообщения */
         .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 32px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .message {
             display: flex;
-            gap: 12px;
-            animation: fadeIn 0.3s ease;
+            gap: 10px;
+            animation: fadeIn 0.2s ease;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.user {
@@ -280,11 +348,11 @@
         }
 
         .bubble {
-            padding: 12px 18px;
-            border-radius: 20px;
+            padding: 10px 16px;
+            border-radius: 18px;
             max-width: 70%;
-            line-height: 1.5;
-            font-size: 0.95rem;
+            line-height: 1.45;
+            font-size: 0.9rem;
             white-space: pre-wrap;
             word-break: break-word;
         }
@@ -301,30 +369,29 @@
             border-bottom-left-radius: 4px;
         }
 
+        /* Индикатор печати */
         .typing-indicator {
             display: flex;
-            gap: 4px;
+            gap: 5px;
             padding: 8px 0;
         }
-
         .typing-indicator span {
             width: 8px;
             height: 8px;
             background: #2196f3;
             border-radius: 50%;
-            animation: typing 1.4s infinite;
+            animation: typingAnim 1.4s infinite;
         }
-
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
+        @keyframes typingAnim {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
             30% { transform: translateY(-6px); opacity: 1; }
         }
 
+        /* Область ввода */
         .input-area {
-            padding: 20px 32px 32px 32px;
+            padding: 16px 24px 24px 24px;
             background: #ffffff;
             border-top: 1px solid #eef2f6;
         }
@@ -339,12 +406,14 @@
             flex: 1;
             background: #f8f9fa;
             border: 1px solid #e9ecef;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 12px 18px;
             font-family: inherit;
             font-size: 0.95rem;
             resize: none;
             outline: none;
+            transition: all 0.2s;
+            max-height: 120px;
         }
 
         .message-input:focus {
@@ -355,45 +424,17 @@
         .send-btn {
             background: #2196f3;
             padding: 12px 24px;
-            border-radius: 20px;
+            border-radius: 24px;
             width: auto;
         }
 
-        .send-btn:hover {
-            background: #1976d2;
-        }
-
         .status-bar {
-            padding: 8px 32px;
+            padding: 8px 24px;
             background: #f8f9fa;
             border-top: 1px solid #eef2f6;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #868e96;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f3f5;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 260px;
-            }
-            .bubble {
-                max-width: 85%;
-            }
-            .messages-area {
-                padding: 16px;
-            }
+            text-align: center;
         }
     </style>
 </head>
@@ -401,6 +442,8 @@
 <div class="app">
     <div class="sidebar">
         <div class="logo-area">
+            <!-- ЛОГОТИП (твоё фото) -->
+            <img src="data:image/jpeg;base64,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" alt="Pep Logo" class="logo-img">
             <h1>pep</h1>
             <p>бесплатный AI помощник</p>
             <div class="online-badge">🌐 РАБОТАЕТ ОНЛАЙН</div>
@@ -449,7 +492,7 @@
             </div>
 
             <!-- Панель пользователя -->
-            <div id="userPanel" style="display: none; padding: 24px;">
+            <div id="userPanel" style="display: none;">
                 <div class="user-card">
                     <div class="user-name" id="userNameDisplay"></div>
                     <div class="user-email" id="userEmailDisplay"></div>
@@ -458,7 +501,7 @@
                 <button id="logoutBtn" class="btn logout-btn">Выйти</button>
             </div>
 
-            <div class="chat-list" id="chatList" style="display: none;"></div>
+            <div class="chat-list" id="chatList" style="display: none; flex-direction: column;"></div>
         </div>
     </div>
 
@@ -478,12 +521,12 @@
                 <button id="sendBtn" class="btn send-btn" disabled>Отправить</button>
             </div>
         </div>
-        <div class="status-bar" id="statusBar">🟢 Сервер работает • Pep AI 1.0</div>
+        <div class="status-bar" id="statusBar">🟢 Готов к работе • Pep AI</div>
     </div>
 </div>
 
 <script>
-    // ========== КОНФИГУРАЦИЯ ==========
+    // ========== ПОЛЬЗОВАТЕЛИ (localStorage) ==========
     let currentUser = null;
     let currentChatId = null;
     let chats = {};
@@ -492,16 +535,8 @@
     const HF_MODEL = "microsoft/DialoGPT-medium";
     const HF_URL = "https://api-inference.huggingface.co/models/" + HF_MODEL;
     
-    // ========== ПОЛЬЗОВАТЕЛИ (localStorage) ==========
-    function getUsers() {
-        const users = localStorage.getItem('pep_users_db');
-        return users ? JSON.parse(users) : {};
-    }
-    
-    function saveUsers(users) {
-        localStorage.setItem('pep_users_db', JSON.stringify(users));
-    }
-    
+    function getUsers() { const u = localStorage.getItem('pep_users_db'); return u ? JSON.parse(u) : {}; }
+    function saveUsers(u) { localStorage.setItem('pep_users_db', JSON.stringify(u)); }
     function registerUser(name, email, password) {
         const users = getUsers();
         if (users[email]) return { success: false, error: 'Email уже зарегистрирован' };
@@ -509,7 +544,6 @@
         saveUsers(users);
         return { success: true };
     }
-    
     function loginUser(email, password) {
         const users = getUsers();
         const user = users[email];
@@ -517,315 +551,178 @@
         if (user.password !== password) return { success: false, error: 'Неверный пароль' };
         return { success: true, user };
     }
+    function getUserChats(email) { const c = localStorage.getItem(`pep_chats_${email}`); return c ? JSON.parse(c) : {}; }
+    function saveUserChats(email, uc) { localStorage.setItem(`pep_chats_${email}`, JSON.stringify(uc)); }
     
-    function getUserChats(email) {
-        const chats = localStorage.getItem(`pep_chats_${email}`);
-        return chats ? JSON.parse(chats) : {};
-    }
-    
-    function saveUserChats(email, userChats) {
-        localStorage.setItem(`pep_chats_${email}`, JSON.stringify(userChats));
-    }
-    
-    // ========== UI ПЕРЕКЛЮЧЕНИЕ ==========
     function showLoginForm() {
-        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('loginForm').style.display = 'flex';
         document.getElementById('registerForm').style.display = 'none';
         document.getElementById('userPanel').style.display = 'none';
         document.getElementById('chatList').style.display = 'none';
     }
-    
     function showRegisterForm() {
         document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'flex';
         document.getElementById('userPanel').style.display = 'none';
         document.getElementById('chatList').style.display = 'none';
     }
-    
     function showUserPanel() {
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('registerForm').style.display = 'none';
         document.getElementById('userPanel').style.display = 'block';
-        document.getElementById('chatList').style.display = 'block';
+        document.getElementById('chatList').style.display = 'flex';
         document.getElementById('userNameDisplay').innerHTML = currentUser.name;
         document.getElementById('userEmailDisplay').innerHTML = currentUser.email;
     }
     
-    // ========== ЛОГИН/РЕГИСТРАЦИЯ ==========
     function handleLogin() {
         const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        if (!email || !password) { alert('Заполните все поля'); return; }
-        
-        const result = loginUser(email, password);
-        if (result.success) {
-            currentUser = result.user;
+        const pwd = document.getElementById('loginPassword').value;
+        if (!email || !pwd) { alert('Заполните все поля'); return; }
+        const res = loginUser(email, pwd);
+        if (res.success) {
+            currentUser = res.user;
             chats = getUserChats(email);
             currentChatId = null;
             showUserPanel();
             renderChatList();
-            
-            const chatIds = Object.keys(chats);
-            if (chatIds.length > 0) loadChat(chatIds[0]);
+            const ids = Object.keys(chats);
+            if (ids.length) loadChat(ids[0]);
             else createNewChat();
-            
             document.getElementById('userInput').disabled = false;
             document.getElementById('sendBtn').disabled = false;
-            document.getElementById('statusBar').innerHTML = '🟢 Добро пожаловать, ' + currentUser.name + '!';
-        } else {
-            alert(result.error);
-        }
+        } else alert(res.error);
     }
-    
     function handleRegister() {
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        if (!name || !email || !password) { alert('Заполните все поля'); return; }
+        const pwd = document.getElementById('regPassword').value;
+        if (!name || !email || !pwd) { alert('Заполните все поля'); return; }
         if (!email.includes('@')) { alert('Введите корректный email'); return; }
-        
-        const result = registerUser(name, email, password);
-        if (result.success) {
+        const res = registerUser(name, email, pwd);
+        if (res.success) {
             alert('Аккаунт создан! Теперь войдите.');
             showLoginForm();
             document.getElementById('loginEmail').value = email;
             document.getElementById('loginPassword').value = '';
-        } else {
-            alert(result.error);
-        }
+        } else alert(res.error);
     }
-    
     function logout() {
-        currentUser = null;
-        currentChatId = null;
-        chats = {};
+        currentUser = null; currentChatId = null; chats = {};
         showLoginForm();
         document.getElementById('userInput').disabled = true;
         document.getElementById('sendBtn').disabled = true;
-        document.getElementById('loginEmail').value = '';
-        document.getElementById('loginPassword').value = '';
-        document.getElementById('messagesArea').innerHTML = `
-            <div class="message bot">
-                <div class="avatar avatar-bot">🧠</div>
-                <div class="bubble bubble-bot">Привет! Я Пеп — твой бесплатный AI-помощник. Войди или зарегистрируйся, чтобы начать общение! ✨</div>
-            </div>
-        `;
+        document.getElementById('messagesArea').innerHTML = `<div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я Пеп — твой AI-помощник. Войди или зарегистрируйся!</div></div>`;
     }
     
-    // ========== API ВЫЗОВ (бесплатный Hugging Face) ==========
     async function callAI(message, history) {
         try {
             let context = [];
-            for (let i = Math.max(0, history.length - 8); i < history.length; i++) {
-                if (history[i].role === 'user') {
-                    context.push(history[i].content);
-                }
-            }
+            for (let i = Math.max(0, history.length-8); i < history.length; i++)
+                if (history[i].role === 'user') context.push(history[i].content);
             context.push(message);
-            
-            const response = await fetch(HF_URL, {
+            const resp = await fetch(HF_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    inputs: { text: context.join(" ") },
-                    parameters: { max_length: 250, temperature: 0.8, top_p: 0.9, do_sample: true }
-                })
+                body: JSON.stringify({ inputs: { text: context.join(" ") }, parameters: { max_length: 200, temperature: 0.8 } })
             });
-            
-            if (!response.ok) {
-                if (response.status === 503) {
-                    return "🔄 Модель загружается... Подожди 10 секунд и отправь ещё раз!";
-                }
-                throw new Error(`API error: ${response.status}`);
+            if (!resp.ok) {
+                if (resp.status === 503) return "🔄 Модель загружается... Подожди!";
+                throw new Error();
             }
-            
-            const data = await response.json();
+            const data = await resp.json();
             let reply = data.generated_text || data[0]?.generated_text;
-            
-            if (reply && reply.includes(context.join(" "))) {
-                reply = reply.replace(context.join(" "), "").trim();
-            }
-            
-            if (!reply || reply.length < 2) {
-                reply = "Расскажи подробнее! 😊";
-            }
-            
+            if (reply && reply.includes(context.join(" "))) reply = reply.replace(context.join(" "), "").trim();
+            if (!reply || reply.length < 2) reply = "Расскажи подробнее! 😊";
             return reply;
-        } catch (error) {
-            console.error('AI Error:', error);
-            return "Я здесь! Напиши что-нибудь ещё 🤖";
-        }
+        } catch(e) { return "✨ Я здесь! Напиши что-нибудь ещё."; }
     }
     
-    // ========== УПРАВЛЕНИЕ ЧАТАМИ ==========
     function createNewChat() {
         if (!currentUser) return;
-        const chatId = Date.now().toString();
-        currentChatId = chatId;
-        chats[chatId] = {
-            id: chatId,
-            title: `Чат ${new Date().toLocaleString()}`,
-            created: Date.now(),
-            messages: [{ role: 'bot', content: 'Чем могу помочь сегодня? 😊' }]
-        };
+        const cid = Date.now().toString();
+        currentChatId = cid;
+        chats[cid] = { id: cid, title: `Чат ${new Date().toLocaleString()}`, created: Date.now(), messages: [{ role: 'bot', content: 'Чем могу помочь? 😊' }] };
         saveUserChats(currentUser.email, chats);
         renderChatList();
         renderCurrentChat();
     }
-    
-    function loadChat(chatId) {
-        if (!chats[chatId]) return;
-        currentChatId = chatId;
-        renderCurrentChat();
-        renderChatList();
-    }
-    
-    function deleteChat(chatId) {
-        if (confirm('Удалить этот чат?')) {
-            delete chats[chatId];
+    function loadChat(cid) { if (!chats[cid]) return; currentChatId = cid; renderCurrentChat(); renderChatList(); }
+    function deleteChat(cid) {
+        if (confirm('Удалить чат?')) {
+            delete chats[cid];
             saveUserChats(currentUser.email, chats);
-            const chatIds = Object.keys(chats);
-            if (chatIds.length > 0) loadChat(chatIds[0]);
+            const ids = Object.keys(chats);
+            if (ids.length) loadChat(ids[0]);
             else createNewChat();
             renderChatList();
         }
     }
-    
     function renderChatList() {
-        const container = document.getElementById('chatList');
-        if (!container) return;
-        container.innerHTML = '';
-        const sorted = Object.values(chats).sort((a, b) => b.created - a.created);
+        const cont = document.getElementById('chatList');
+        if (!cont) return;
+        cont.innerHTML = '';
+        const sorted = Object.values(chats).sort((a,b)=>b.created - a.created);
         sorted.forEach(chat => {
             const div = document.createElement('div');
             div.className = `chat-item ${currentChatId === chat.id ? 'active' : ''}`;
-            div.innerHTML = `<div class="chat-title">${escapeHtml(chat.title.substring(0, 35))}</div><div class="chat-date">${new Date(chat.created).toLocaleString()}</div>`;
+            div.innerHTML = `<div class="chat-title">${escapeHtml(chat.title.substring(0,35))}</div><div class="chat-date">${new Date(chat.created).toLocaleString()}</div>`;
             div.onclick = () => loadChat(chat.id);
             div.oncontextmenu = (e) => { e.preventDefault(); deleteChat(chat.id); };
-            container.appendChild(div);
+            cont.appendChild(div);
         });
     }
-    
     function renderCurrentChat() {
         if (!currentChatId || !chats[currentChatId]) return;
-        const container = document.getElementById('messagesArea');
+        const cont = document.getElementById('messagesArea');
         const chat = chats[currentChatId];
-        container.innerHTML = '';
-        chat.messages.forEach(msg => {
-            addMessageToUI(msg.role, msg.content, false);
-        });
-        
+        cont.innerHTML = '';
+        chat.messages.forEach(msg => addMessageToUI(msg.role, msg.content, false));
         if (chat.messages.length > 1 && chat.title.startsWith('Чат ')) {
-            const firstUserMsg = chat.messages.find(m => m.role === 'user');
-            if (firstUserMsg) {
-                chat.title = firstUserMsg.content.substring(0, 30) + '...';
-                saveUserChats(currentUser.email, chats);
-                renderChatList();
-            }
+            const first = chat.messages.find(m => m.role === 'user');
+            if (first) { chat.title = first.content.substring(0,30)+'...'; saveUserChats(currentUser.email, chats); renderChatList(); }
         }
     }
-    
-    function addMessageToUI(role, text, save = true) {
-        const container = document.getElementById('messagesArea');
+    function addMessageToUI(role, text, save=true) {
+        const cont = document.getElementById('messagesArea');
         const div = document.createElement('div');
         div.className = `message ${role === 'user' ? 'user' : 'bot'}`;
-        div.innerHTML = `
-            <div class="avatar ${role === 'user' ? 'avatar-user' : 'avatar-bot'}">${role === 'user' ? '👤' : '🧠'}</div>
-            <div class="bubble ${role === 'user' ? 'bubble-user' : 'bubble-bot'}">${escapeHtml(text)}</div>
-        `;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-        
-        if (save && currentChatId && chats[currentChatId]) {
-            chats[currentChatId].messages.push({ role, content: text });
-            saveUserChats(currentUser.email, chats);
-        }
+        div.innerHTML = `<div class="avatar ${role === 'user' ? 'avatar-user' : 'avatar-bot'}">${role === 'user' ? '👤' : '🧠'}</div><div class="bubble ${role === 'user' ? 'bubble-user' : 'bubble-bot'}">${escapeHtml(text)}</div>`;
+        cont.appendChild(div);
+        cont.scrollTop = cont.scrollHeight;
+        if (save && currentChatId && chats[currentChatId]) { chats[currentChatId].messages.push({ role, content: text }); saveUserChats(currentUser.email, chats); }
     }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function showTyping() {
-        const container = document.getElementById('messagesArea');
-        const div = document.createElement('div');
-        div.className = 'message bot';
-        div.id = 'typingIndicator';
-        div.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot typing-indicator"><span></span><span></span><span></span></div>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-    }
-    
-    function removeTyping() {
-        const el = document.getElementById('typingIndicator');
-        if (el) el.remove();
-    }
+    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    function showTyping() { const c = document.getElementById('messagesArea'); const d = document.createElement('div'); d.className = 'message bot'; d.id = 'typingIndicator'; d.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot typing-indicator"><span></span><span></span><span></span></div>`; c.appendChild(d); c.scrollTop = c.scrollHeight; }
+    function removeTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
     
     async function handleSend() {
         if (isLoading || !currentUser || !currentChatId) return;
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
+        const inp = document.getElementById('userInput');
+        const text = inp.value.trim();
         if (!text) return;
-        
-        input.value = '';
-        input.style.height = 'auto';
+        inp.value = ''; inp.style.height = 'auto';
         addMessageToUI('user', text, true);
-        
-        const chat = chats[currentChatId];
-        const history = chat.messages;
-        
         isLoading = true;
         document.getElementById('sendBtn').disabled = true;
         showTyping();
-        
         try {
             removeTyping();
-            const container = document.getElementById('messagesArea');
+            const cont = document.getElementById('messagesArea');
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message bot';
             msgDiv.id = 'streamingMessage';
             msgDiv.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot" id="streamBubble">🤔 Думаю...</div>`;
-            container.appendChild(msgDiv);
+            cont.appendChild(msgDiv);
             const bubble = document.getElementById('streamBubble');
-            
-            const reply = await callAI(text, history);
-            
+            const reply = await callAI(text, chats[currentChatId].messages);
             if (bubble) bubble.innerText = reply;
             msgDiv.removeAttribute('id');
-            
-            if (currentChatId && chats[currentChatId]) {
-                chats[currentChatId].messages.push({ role: 'bot', content: reply });
-                saveUserChats(currentUser.email, chats);
-            }
-            
-            const currentChat = chats[currentChatId];
-            if (currentChat && currentChat.messages.length > 1 && currentChat.title.startsWith('Чат ')) {
-                const firstUserMsg = currentChat.messages.find(m => m.role === 'user');
-                if (firstUserMsg) {
-                    currentChat.title = firstUserMsg.content.substring(0, 30) + '...';
-                    saveUserChats(currentUser.email, chats);
-                    renderChatList();
-                }
-            }
-        } catch(err) {
-            removeTyping();
-            const errorDiv = document.getElementById('streamingMessage');
-            if (errorDiv) errorDiv.remove();
-            addMessageToUI('bot', '✨ Давай продолжим! Напиши что-нибудь ещё.', true);
-        } finally {
-            isLoading = false;
-            document.getElementById('sendBtn').disabled = false;
-            input.focus();
-        }
+            if (currentChatId && chats[currentChatId]) { chats[currentChatId].messages.push({ role: 'bot', content: reply }); saveUserChats(currentUser.email, chats); }
+        } catch(err) { removeTyping(); const errDiv = document.getElementById('streamingMessage'); if(errDiv) errDiv.remove(); addMessageToUI('bot', '✨ Давай продолжим!', true); }
+        finally { isLoading = false; document.getElementById('sendBtn').disabled = false; inp.focus(); }
     }
     
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
     document.getElementById('doLoginBtn').onclick = handleLogin;
     document.getElementById('doRegisterBtn').onclick = handleRegister;
     document.getElementById('showRegisterBtn').onclick = showRegisterForm;
@@ -833,11 +730,9 @@
     document.getElementById('logoutBtn').onclick = logout;
     document.getElementById('newChatBtn').onclick = createNewChat;
     document.getElementById('sendBtn').onclick = handleSend;
-    
-    const userInput = document.getElementById('userInput');
-    userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
-    userInput.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
-    
+    const ui = document.getElementById('userInput');
+    ui.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+    ui.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
     showLoginForm();
 </script>
 </body>

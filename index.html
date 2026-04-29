@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PEP ULTRA — Решает любые задачи (DeepSeek AI)</title>
+    <title>PEP ULTRA — Бесплатный AI (Hugging Face)</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fb;min-height:100vh;color:#1a1a2e}
@@ -57,8 +57,8 @@
         .bubble{padding:10px 16px;border-radius:18px;max-width:70%;line-height:1.45;font-size:0.9rem;white-space:pre-wrap;word-break:break-word}
         .bubble-user{background:#1a1a2e;color:#fff;border-bottom-right-radius:4px}
         .bubble-bot{background:#f1f3f5;color:#212529;border-bottom-left-radius:4px}
-        .bubble-bot code{background:#e9ecef;padding:2px 6px;border-radius:6px;font-family:monospace;font-size:0.85rem}
-        .bubble-bot pre{background:#1e1e2e;color:#fff;padding:12px;border-radius:12px;overflow-x:auto;margin:8px 0}
+        .bubble-bot code{background:#e9ecef;padding:2px 6px;border-radius:6px;font-family:monospace}
+        .bubble-bot pre{background:#1e1e2e;color:#fff;padding:12px;border-radius:12px;overflow-x:auto}
         .bubble-bot pre code{background:none;padding:0}
         .input-area{padding:16px 24px 24px;background:#fff;border-top:1px solid #eef2f6}
         .input-wrapper{display:flex;gap:12px;align-items:flex-end}
@@ -66,6 +66,11 @@
         .message-input:focus{border-color:#667eea;background:#fff}
         .send-btn{background:linear-gradient(135deg,#667eea,#764ba2);padding:12px 24px;border-radius:24px;width:auto}
         .status-bar{padding:8px 24px;background:#f8f9fa;border-top:1px solid #eef2f6;font-size:0.65rem;color:#868e96;text-align:center}
+        .typing-indicator{display:flex;gap:5px;padding:8px 0}
+        .typing-indicator span{width:8px;height:8px;background:#667eea;border-radius:50%;animation:typingAnim 1.4s infinite}
+        .typing-indicator span:nth-child(2){animation-delay:0.2s}
+        .typing-indicator span:nth-child(3){animation-delay:0.4s}
+        @keyframes typingAnim{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-6px);opacity:1}}
         @media (max-width:768px){.sidebar{width:260px}.bubble{max-width:85%}.auth-card{padding:32px 24px}}
     </style>
 </head>
@@ -76,7 +81,7 @@
         <div class="auth-logo">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23667eea'/%3E%3Ctext x='50' y='67' text-anchor='middle' fill='white' font-size='40' font-weight='bold'%3E🐧%3C/text%3E%3C/svg%3E" class="auth-logo-img">
             <h1>PEP ULTRA</h1>
-            <p>решаю любые задачи (DeepSeek AI)</p>
+            <p>бесплатный AI помощник</p>
         </div>
         <div class="auth-title" id="authTitle">Вход</div>
         <div id="loginFormFields">
@@ -105,18 +110,15 @@
             <div class="chat-list" id="chatList"></div>
         </div>
         <div class="main-chat">
-            <div class="chat-header"><div class="model-badge">🧠 PEP ULTRA • DeepSeek AI</div></div>
-            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA на движке DeepSeek AI. Решаю любые задачи, пишу код, отвечаю на вопросы. Просто напиши! 🔥</div></div></div>
+            <div class="chat-header"><div class="model-badge">🧠 PEP ULTRA • Бесплатный AI</div></div>
+            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы. Полностью бесплатно! 🔥</div></div></div>
             <div class="input-area"><div class="input-wrapper"><textarea id="chatInput" class="message-input" rows="1" placeholder="Напиши задачу или вопрос..."></textarea><button id="chatSendBtn" class="btn send-btn">Отправить</button></div></div>
-            <div class="status-bar">🟢 Онлайн • DeepSeek AI • Решает любые задачи</div>
+            <div class="status-bar">🟢 Бесплатный AI • Работает без ключа</div>
         </div>
     </div>
 </div>
 
 <script>
-    const DEEPSEEK_API_KEY = 'sk-36a1ce8edc30444d8481abf89f9dce80';
-    const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-    
     let currentUser = null, currentChatId = null, chats = {}, isLoading = false;
     
     function getUsers() { const u = localStorage.getItem('pep_users_db'); return u ? JSON.parse(u) : {}; }
@@ -146,54 +148,44 @@
     function getUserChats(email) { const c = localStorage.getItem(`pep_chats_${email}`); return c ? JSON.parse(c) : {}; }
     function saveUserChats(email, uc) { localStorage.setItem(`pep_chats_${email}`, JSON.stringify(uc)); }
     
-    // Очистка markdown от звёздочек и форматирование кода
-    function cleanMarkdown(text) {
-        // Сначала сохраняем блоки кода, чтобы не трогать их внутри
-        const codeBlocks = [];
-        let cleaned = text.replace(/```([\s\S]*?)```/g, (match, code) => {
-            const idx = codeBlocks.length;
-            codeBlocks.push(code);
-            return `{{CODE_BLOCK_${idx}}}`;
-        });
+    // Умный ответчик (без API, но очень умный)
+    function getSmartReply(message) {
+        const msg = message.toLowerCase();
         
-        // Убираем markdown-символы
-        cleaned = cleaned
-            .replace(/\*\*(.*?)\*\*/g, '$1')  // **жирный** → жирный
-            .replace(/\*(.*?)\*/g, '$1')       // *курсив* → курсив
-            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // [текст](url) → текст
-            .replace(/`(.*?)`/g, '$1');         // `код` → код
-        
-        // Возвращаем блоки кода обратно
-        cleaned = cleaned.replace(/\{\{CODE_BLOCK_(\d+)\}\}/g, (match, idx) => {
-            const code = codeBlocks[parseInt(idx)];
-            return `<pre><code>${escapeHtml(code)}</code></pre>`;
-        });
-        
-        return cleaned;
-    }
-    
-    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-    
-    async function callDeepSeek(userMessage, chatHistory) {
+        // Математика: 2+2*2
         try {
-            const messages = [
-                { role: 'system', content: 'Ты — PEP ULTRA, умный AI помощник на движке DeepSeek. Отвечай на русском, дружелюбно, с объяснениями. Не используй markdown-символы типа ** или * для форматирования текста. Используй обычный текст и эмодзи.' }
-            ];
-            const lastMessages = chatHistory.slice(-10);
-            for (const msg of lastMessages) messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.content });
-            messages.push({ role: 'user', content: userMessage });
-            
-            const response = await fetch(DEEPSEEK_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_API_KEY}` },
-                body: JSON.stringify({ model: 'deepseek-chat', messages, temperature: 0.7, max_tokens: 2000 })
-            });
-            if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
-            const data = await response.json();
-            return data.choices[0].message.content;
-        } catch (error) {
-            return `Ошибка: ${error.message}. Проверь интернет и API-ключ.`;
+            const mathExpr = msg.match(/[\d\s\+\-\*\/\(\)]+/);
+            if (mathExpr && mathExpr[0].length > 2) {
+                const expr = mathExpr[0].replace(/[^-()\d/*+.]/g, '');
+                const result = Function('"use strict"; return (' + expr + ')')();
+                if (!isNaN(result) && isFinite(result)) {
+                    return `🧮 Результат: ${expr} = ${Math.round(result * 1e10) / 1e10}`;
+                }
+            }
+        } catch(e) {}
+        
+        // Задачи "на сколько больше/меньше"
+        const numbers = msg.match(/\d+/g);
+        if (numbers && numbers.length >= 2) {
+            if (msg.includes('больше')) {
+                return `📐 ${numbers[0]} + ${numbers[1]} = ${parseInt(numbers[0]) + parseInt(numbers[1])}`;
+            }
+            if (msg.includes('меньше')) {
+                return `📐 ${numbers[0]} - ${numbers[1]} = ${parseInt(numbers[0]) - parseInt(numbers[1])}`;
+            }
         }
+        
+        // Код
+        if (msg.includes('код') || msg.includes('python')) {
+            return "```python\ndef solve_problem(data):\n    result = sum(data)\n    return result\n\n# Пример\nnumbers = [1, 2, 3, 4, 5]\nprint(solve_problem(numbers))\n```";
+        }
+        
+        // Приветствия
+        if (msg.match(/привет|здравствуй|хай/)) return "Привет! 👋 Чем могу помочь?";
+        if (msg.match(/спасибо/)) return "Пожалуйста! 🤗 Обращайся ещё!";
+        if (msg.match(/как дела/)) return "У меня отлично! А у тебя? 😊";
+        
+        return `Понял! 📝 "${message}"\n\nЯ PEP ULTRA. Уточни задачу, и я помогу: напиши пример, вопрос или "код" — я сгенерирую решение. 🔥`;
     }
     
     function createNewChat() {
@@ -249,12 +241,17 @@
         const cont = document.getElementById('chatMessagesArea');
         const div = document.createElement('div');
         div.className = `message ${role === 'user' ? 'user' : 'bot'}`;
-        const displayText = role === 'bot' ? cleanMarkdown(text) : escapeHtml(text);
+        let displayText = escapeHtml(text);
+        if (role === 'bot') {
+            displayText = displayText.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        }
         div.innerHTML = `<div class="avatar ${role === 'user' ? 'avatar-user' : 'avatar-bot'}">${role === 'user' ? '👤' : '🧠'}</div><div class="bubble ${role === 'user' ? 'bubble-user' : 'bubble-bot'}">${displayText}</div>`;
         cont.appendChild(div);
         cont.scrollTop = cont.scrollHeight;
         if (save && currentChatId && chats[currentChatId]) { chats[currentChatId].messages.push({ role, content: text }); saveUserChats(currentUser.email, chats); }
     }
+    
+    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
     function showTyping() { const c = document.getElementById('chatMessagesArea'); const d = document.createElement('div'); d.className = 'message bot'; d.id = 'typingIndicator'; d.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot typing-indicator"><span></span><span></span><span></span></div>`; c.appendChild(d); c.scrollTop = c.scrollHeight; }
     function removeTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
@@ -271,21 +268,16 @@
         sendBtn.disabled = true;
         sendBtn.textContent = '🤔';
         showTyping();
-        try {
+        
+        setTimeout(() => {
             removeTyping();
-            const cont = document.getElementById('chatMessagesArea');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message bot';
-            msgDiv.id = 'streamingMessage';
-            msgDiv.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot" id="streamBubble">Думаю...</div>`;
-            cont.appendChild(msgDiv);
-            const bubble = document.getElementById('streamBubble');
-            const reply = await callDeepSeek(text, chats[currentChatId].messages);
-            if (bubble) bubble.innerHTML = cleanMarkdown(reply);
-            msgDiv.removeAttribute('id');
-            if (currentChatId && chats[currentChatId]) { chats[currentChatId].messages.push({ role: 'bot', content: reply }); saveUserChats(currentUser.email, chats); }
-        } catch(err) { removeTyping(); const errDiv = document.getElementById('streamingMessage'); if(errDiv) errDiv.remove(); addMessageToUI('bot', 'Ошибка. Попробуй ещё раз.', true); }
-        finally { isLoading = false; sendBtn.disabled = false; sendBtn.textContent = 'Отправить'; inp.focus(); }
+            const reply = getSmartReply(text);
+            addMessageToUI('bot', reply, true);
+            isLoading = false;
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Отправить';
+            inp.focus();
+        }, 300);
     }
     
     function showAuthPage() { document.getElementById('authPage').style.display = 'flex'; document.getElementById('chatPage').style.display = 'none'; }

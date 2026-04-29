@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PEP ULTRA — Бесплатный AI (Hugging Face)</title>
+    <title>PEP ULTRA — Локальный AI (Ollama)</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fb;min-height:100vh;color:#1a1a2e}
@@ -81,7 +81,7 @@
         <div class="auth-logo">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23667eea'/%3E%3Ctext x='50' y='67' text-anchor='middle' fill='white' font-size='40' font-weight='bold'%3E🐧%3C/text%3E%3C/svg%3E" class="auth-logo-img">
             <h1>PEP ULTRA</h1>
-            <p>бесплатный AI помощник</p>
+            <p>локальный AI (Ollama)</p>
         </div>
         <div class="auth-title" id="authTitle">Вход</div>
         <div id="loginFormFields">
@@ -110,16 +110,18 @@
             <div class="chat-list" id="chatList"></div>
         </div>
         <div class="main-chat">
-            <div class="chat-header"><div class="model-badge">🧠 PEP ULTRA • Бесплатный AI</div></div>
-            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA. Решаю задачи, пишу код, отвечаю на вопросы. Полностью бесплатно! 🔥</div></div></div>
+            <div class="chat-header"><div class="model-badge">🧠 PEP ULTRA • Локальный AI (через Ollama)</div></div>
+            <div class="messages-area" id="chatMessagesArea"><div class="message bot"><div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot">Привет! Я PEP ULTRA на Ollama. Отвечаю на любые вопросы, решаю задачи, помогаю с кодом. Просто напиши! 🔥</div></div></div>
             <div class="input-area"><div class="input-wrapper"><textarea id="chatInput" class="message-input" rows="1" placeholder="Напиши задачу или вопрос..."></textarea><button id="chatSendBtn" class="btn send-btn">Отправить</button></div></div>
-            <div class="status-bar">🟢 Бесплатный AI • Работает без ключа</div>
+            <div class="status-bar" id="statusBar">🔍 Проверка подключения к Ollama...</div>
         </div>
     </div>
 </div>
 
 <script>
     let currentUser = null, currentChatId = null, chats = {}, isLoading = false;
+    const OLLAMA_URL = 'http://127.0.0.1:11434/api/generate';
+    const MODEL_NAME = 'mistral:7b';
     
     function getUsers() { const u = localStorage.getItem('pep_users_db'); return u ? JSON.parse(u) : {}; }
     function saveUsers(u) { localStorage.setItem('pep_users_db', JSON.stringify(u)); }
@@ -148,51 +150,71 @@
     function getUserChats(email) { const c = localStorage.getItem(`pep_chats_${email}`); return c ? JSON.parse(c) : {}; }
     function saveUserChats(email, uc) { localStorage.setItem(`pep_chats_${email}`, JSON.stringify(uc)); }
     
-    // Умный ответчик (без API, но очень умный)
-    function getSmartReply(message) {
-        const msg = message.toLowerCase();
-        
-        // Математика: 2+2*2
+    // Проверка подключения к Ollama
+    async function checkOllama() {
+        const statusBar = document.getElementById('statusBar');
         try {
-            const mathExpr = msg.match(/[\d\s\+\-\*\/\(\)]+/);
-            if (mathExpr && mathExpr[0].length > 2) {
-                const expr = mathExpr[0].replace(/[^-()\d/*+.]/g, '');
-                const result = Function('"use strict"; return (' + expr + ')')();
-                if (!isNaN(result) && isFinite(result)) {
-                    return `🧮 Результат: ${expr} = ${Math.round(result * 1e10) / 1e10}`;
+            const response = await fetch('http://127.0.0.1:11434/api/tags');
+            if (response.ok) {
+                statusBar.innerHTML = '🟢 Локальный AI активен (mistral:7b) • Быстрые ответы';
+                return true;
+            }
+        } catch(e) {
+            statusBar.innerHTML = '🔴 Ollama не запущен! Открой терминал и выполни: ollama serve';
+            return false;
+        }
+    }
+    
+    // Запрос к Ollama
+    async function callOllama(prompt, history) {
+        // Формируем контекст из истории
+        let context = '';
+        for (let i = Math.max(0, history.length - 10); i < history.length; i++) {
+            if (history[i].role === 'user') {
+                context += `Пользователь: ${history[i].content}\n`;
+            } else {
+                context += `Ассистент: ${history[i].content}\n`;
+            }
+        }
+        context += `Пользователь: ${prompt}\nАссистент: `;
+        
+        const response = await fetch(OLLAMA_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: MODEL_NAME,
+                prompt: context,
+                stream: true,
+                options: { temperature: 0.7, num_predict: 1000 }
+            })
+        });
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+                if (line.trim()) {
+                    try {
+                        const json = JSON.parse(line);
+                        if (json.response) fullResponse += json.response;
+                    } catch(e) {}
                 }
             }
-        } catch(e) {}
-        
-        // Задачи "на сколько больше/меньше"
-        const numbers = msg.match(/\d+/g);
-        if (numbers && numbers.length >= 2) {
-            if (msg.includes('больше')) {
-                return `📐 ${numbers[0]} + ${numbers[1]} = ${parseInt(numbers[0]) + parseInt(numbers[1])}`;
-            }
-            if (msg.includes('меньше')) {
-                return `📐 ${numbers[0]} - ${numbers[1]} = ${parseInt(numbers[0]) - parseInt(numbers[1])}`;
-            }
         }
-        
-        // Код
-        if (msg.includes('код') || msg.includes('python')) {
-            return "```python\ndef solve_problem(data):\n    result = sum(data)\n    return result\n\n# Пример\nnumbers = [1, 2, 3, 4, 5]\nprint(solve_problem(numbers))\n```";
-        }
-        
-        // Приветствия
-        if (msg.match(/привет|здравствуй|хай/)) return "Привет! 👋 Чем могу помочь?";
-        if (msg.match(/спасибо/)) return "Пожалуйста! 🤗 Обращайся ещё!";
-        if (msg.match(/как дела/)) return "У меня отлично! А у тебя? 😊";
-        
-        return `Понял! 📝 "${message}"\n\nЯ PEP ULTRA. Уточни задачу, и я помогу: напиши пример, вопрос или "код" — я сгенерирую решение. 🔥`;
+        return fullResponse || "Ответ от AI...";
     }
     
     function createNewChat() {
         if (!currentUser) return;
         const cid = Date.now().toString();
         currentChatId = cid;
-        chats[cid] = { id: cid, title: `Чат ${new Date().toLocaleString()}`, created: Date.now(), messages: [{ role: 'bot', content: 'Привет! Я PEP ULTRA. Задавай любые вопросы! 🔥' }] };
+        chats[cid] = { id: cid, title: `Чат ${new Date().toLocaleString()}`, created: Date.now(), messages: [{ role: 'bot', content: 'Привет! Я PEP ULTRA на Ollama. Задавай любые вопросы! 🔥' }] };
         saveUserChats(currentUser.email, chats);
         renderChatList();
         renderCurrentChat();
@@ -261,23 +283,46 @@
         const inp = document.getElementById('chatInput');
         const text = inp.value.trim();
         if (!text) return;
+        
         inp.value = ''; inp.style.height = 'auto';
         addMessageToUI('user', text, true);
+        
         isLoading = true;
         const sendBtn = document.getElementById('chatSendBtn');
         sendBtn.disabled = true;
-        sendBtn.textContent = '🤔';
+        sendBtn.textContent = '...';
         showTyping();
         
-        setTimeout(() => {
+        try {
             removeTyping();
-            const reply = getSmartReply(text);
-            addMessageToUI('bot', reply, true);
-            isLoading = false;
+            const cont = document.getElementById('chatMessagesArea');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            msgDiv.id = 'streamingMessage';
+            msgDiv.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot" id="streamBubble">🤔 Думаю...</div>`;
+            cont.appendChild(msgDiv);
+            const bubble = document.getElementById('streamBubble');
+            
+            const reply = await callOllama(text, chats[currentChatId].messages);
+            
+            if (bubble) bubble.innerHTML = reply.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            msgDiv.removeAttribute('id');
+            
+            if (currentChatId && chats[currentChatId]) { 
+                chats[currentChatId].messages.push({ role: 'bot', content: reply }); 
+                saveUserChats(currentUser.email, chats); 
+            }
+        } catch(err) { 
+            removeTyping(); 
+            const errDiv = document.getElementById('streamingMessage'); 
+            if(errDiv) errDiv.remove(); 
+            addMessageToUI('bot', `❌ Ошибка: ${err.message}\n\nПроверь, запущен ли Ollama (терминал: ollama serve)`, true); 
+        } finally { 
+            isLoading = false; 
             sendBtn.disabled = false;
             sendBtn.textContent = 'Отправить';
-            inp.focus();
-        }, 300);
+            inp.focus(); 
+        }
     }
     
     function showAuthPage() { document.getElementById('authPage').style.display = 'flex'; document.getElementById('chatPage').style.display = 'none'; }
@@ -306,6 +351,7 @@
             if (ids.length) loadChat(ids[0]);
             else createNewChat();
             showChatPage();
+            checkOllama();
         } else {
             if (res.error === 'Email не найден') setFieldError('loginEmail', res.error);
             else if (res.error === 'Неверный пароль') setFieldError('loginPassword', res.error);
@@ -353,6 +399,8 @@
     const chatInput = document.getElementById('chatInput');
     chatInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
     chatInput.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
+    
+    setInterval(checkOllama, 10000);
     showAuthPage();
     showLoginForm();
 </script>

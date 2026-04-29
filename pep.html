@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pep AI — Регистрация • Бесплатный чат</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            background: #f5f7fb;
+            min-height: 100vh;
+            color: #1a1a2e;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            background: #f5f7fb;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e8ecf0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-area {
+            padding: 28px 24px;
+            border-bottom: 1px solid #eef2f6;
+            text-align: center;
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .logo-area p {
+            font-size: 0.75rem;
+            color: #868e96;
+            margin-top: 6px;
+        }
+
+        .online-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .auth-section {
+            padding: 24px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.75rem;
+            color: #1565c0;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #2196f3;
+            background: #ffffff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: #868e96;
+            cursor: pointer;
+        }
+
+        .switch-link span {
+            color: #2196f3;
+            font-weight: 500;
+        }
+
+        .user-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1a1a2e;
+        }
+
+        .user-email {
+            font-size: 0.7rem;
+            color: #868e96;
+            margin-top: 4px;
+        }
+
+        .logout-btn {
+            background: #fff5f5;
+            color: #e03131;
+            border: 1px solid #ffe3e3;
+            margin-top: 12px;
+        }
+
+        .new-chat-btn {
+            background: #f1f3f5;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px 16px;
+        }
+
+        .chat-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-item:hover {
+            background: #f1f3f5;
+        }
+
+        .chat-item.active {
+            background: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+
+        .chat-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .chat-date {
+            font-size: 0.65rem;
+            color: #adb5bd;
+            margin-top: 4px;
+        }
+
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .chat-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #1976d2;
+            font-weight: 500;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .avatar-user {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .avatar-bot {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 70%;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .bubble-user {
+            background: #1a1a2e;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-bot {
+            background: #f1f3f5;
+            color: #212529;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #2196f3;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .input-area {
+            padding: 20px 32px 32px 32px;
+            background: #ffffff;
+            border-top: 1px solid #eef2f6;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 12px 18px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            outline: none;
+        }
+
+        .message-input:focus {
+            border-color: #2196f3;
+            background: #ffffff;
+        }
+
+        .send-btn {
+            background: #2196f3;
+            padding: 12px 24px;
+            border-radius: 20px;
+            width: auto;
+        }
+
+        .send-btn:hover {
+            background: #1976d2;
+        }
+
+        .status-bar {
+            padding: 8px 32px;
+            background: #f8f9fa;
+            border-top: 1px solid #eef2f6;
+            font-size: 0.7rem;
+            color: #868e96;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f3f5;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 260px;
+            }
+            .bubble {
+                max-width: 85%;
+            }
+            .messages-area {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo-area">
+            <h1>pep</h1>
+            <p>бесплатный AI помощник</p>
+            <div class="online-badge">🌐 РАБОТАЕТ ОНЛАЙН</div>
+        </div>
+
+        <div id="authContainer">
+            <!-- Форма входа -->
+            <div id="loginForm" class="auth-section">
+                <div class="info-box">
+                    🤖 <strong>Pep AI</strong><br>
+                    Полностью бесплатно • Без VPN<br>
+                    🔐 Войди или зарегистрируйся
+                </div>
+                <div class="form-group">
+                    <label class="form-label">EMAIL</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ПАРОЛЬ</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••">
+                </div>
+                <button id="doLoginBtn" class="btn btn-primary">🔐 Войти</button>
+                <div class="switch-link" id="showRegisterBtn">Нет аккаунта? <span>Зарегистрироваться</span></div>
+            </div>
+
+            <!-- Форма регистрации -->
+            <div id="registerForm" class="auth-section" style="display: none;">
+                <div class="info-box">
+                    ✨ <strong>Создай аккаунт</strong><br>
+                    Все чаты сохранятся
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ИМЯ</label>
+                    <input type="text" id="regName" class="form-input" placeholder="Алексей">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">EMAIL</label>
+                    <input type="email" id="regEmail" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ПАРОЛЬ</label>
+                    <input type="password" id="regPassword" class="form-input" placeholder="••••••">
+                </div>
+                <button id="doRegisterBtn" class="btn btn-primary">📝 Зарегистрироваться</button>
+                <div class="switch-link" id="showLoginBtn">Уже есть аккаунт? <span>Войти</span></div>
+            </div>
+
+            <!-- Панель пользователя -->
+            <div id="userPanel" style="display: none; padding: 24px;">
+                <div class="user-card">
+                    <div class="user-name" id="userNameDisplay"></div>
+                    <div class="user-email" id="userEmailDisplay"></div>
+                </div>
+                <button id="newChatBtn" class="btn new-chat-btn">+ Новый чат</button>
+                <button id="logoutBtn" class="btn logout-btn">Выйти</button>
+            </div>
+
+            <div class="chat-list" id="chatList" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="main-chat">
+        <div class="chat-header">
+            <div class="model-badge" id="modelStatus">🧠 Pep AI • работает онлайн</div>
+        </div>
+        <div class="messages-area" id="messagesArea">
+            <div class="message bot">
+                <div class="avatar avatar-bot">🧠</div>
+                <div class="bubble bubble-bot">Привет! Я Пеп — твой бесплатный AI-помощник. Войди или зарегистрируйся, чтобы начать общение! ✨</div>
+            </div>
+        </div>
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="userInput" class="message-input" rows="1" placeholder="Напиши сообщение..." disabled></textarea>
+                <button id="sendBtn" class="btn send-btn" disabled>Отправить</button>
+            </div>
+        </div>
+        <div class="status-bar" id="statusBar">🟢 Сервер работает • Pep AI 1.0</div>
+    </div>
+</div>
+
+<script>
+    // ========== КОНФИГУРАЦИЯ ==========
+    let currentUser = null;
+    let currentChatId = null;
+    let chats = {};
+    let isLoading = false;
+    
+    const HF_MODEL = "microsoft/DialoGPT-medium";
+    const HF_URL = "https://api-inference.huggingface.co/models/" + HF_MODEL;
+    
+    // ========== ПОЛЬЗОВАТЕЛИ (localStorage) ==========
+    function getUsers() {
+        const users = localStorage.getItem('pep_users_db');
+        return users ? JSON.parse(users) : {};
+    }
+    
+    function saveUsers(users) {
+        localStorage.setItem('pep_users_db', JSON.stringify(users));
+    }
+    
+    function registerUser(name, email, password) {
+        const users = getUsers();
+        if (users[email]) return { success: false, error: 'Email уже зарегистрирован' };
+        users[email] = { name, email, password, created: Date.now() };
+        saveUsers(users);
+        return { success: true };
+    }
+    
+    function loginUser(email, password) {
+        const users = getUsers();
+        const user = users[email];
+        if (!user) return { success: false, error: 'Email не найден' };
+        if (user.password !== password) return { success: false, error: 'Неверный пароль' };
+        return { success: true, user };
+    }
+    
+    function getUserChats(email) {
+        const chats = localStorage.getItem(`pep_chats_${email}`);
+        return chats ? JSON.parse(chats) : {};
+    }
+    
+    function saveUserChats(email, userChats) {
+        localStorage.setItem(`pep_chats_${email}`, JSON.stringify(userChats));
+    }
+    
+    // ========== UI ПЕРЕКЛЮЧЕНИЕ ==========
+    function showLoginForm() {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('userPanel').style.display = 'none';
+        document.getElementById('chatList').style.display = 'none';
+    }
+    
+    function showRegisterForm() {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('userPanel').style.display = 'none';
+        document.getElementById('chatList').style.display = 'none';
+    }
+    
+    function showUserPanel() {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('userPanel').style.display = 'block';
+        document.getElementById('chatList').style.display = 'block';
+        document.getElementById('userNameDisplay').innerHTML = currentUser.name;
+        document.getElementById('userEmailDisplay').innerHTML = currentUser.email;
+    }
+    
+    // ========== ЛОГИН/РЕГИСТРАЦИЯ ==========
+    function handleLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) { alert('Заполните все поля'); return; }
+        
+        const result = loginUser(email, password);
+        if (result.success) {
+            currentUser = result.user;
+            chats = getUserChats(email);
+            currentChatId = null;
+            showUserPanel();
+            renderChatList();
+            
+            const chatIds = Object.keys(chats);
+            if (chatIds.length > 0) loadChat(chatIds[0]);
+            else createNewChat();
+            
+            document.getElementById('userInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('statusBar').innerHTML = '🟢 Добро пожаловать, ' + currentUser.name + '!';
+        } else {
+            alert(result.error);
+        }
+    }
+    
+    function handleRegister() {
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        if (!name || !email || !password) { alert('Заполните все поля'); return; }
+        if (!email.includes('@')) { alert('Введите корректный email'); return; }
+        
+        const result = registerUser(name, email, password);
+        if (result.success) {
+            alert('Аккаунт создан! Теперь войдите.');
+            showLoginForm();
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').value = '';
+        } else {
+            alert(result.error);
+        }
+    }
+    
+    function logout() {
+        currentUser = null;
+        currentChatId = null;
+        chats = {};
+        showLoginForm();
+        document.getElementById('userInput').disabled = true;
+        document.getElementById('sendBtn').disabled = true;
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('messagesArea').innerHTML = `
+            <div class="message bot">
+                <div class="avatar avatar-bot">🧠</div>
+                <div class="bubble bubble-bot">Привет! Я Пеп — твой бесплатный AI-помощник. Войди или зарегистрируйся, чтобы начать общение! ✨</div>
+            </div>
+        `;
+    }
+    
+    // ========== API ВЫЗОВ (бесплатный Hugging Face) ==========
+    async function callAI(message, history) {
+        try {
+            let context = [];
+            for (let i = Math.max(0, history.length - 8); i < history.length; i++) {
+                if (history[i].role === 'user') {
+                    context.push(history[i].content);
+                }
+            }
+            context.push(message);
+            
+            const response = await fetch(HF_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    inputs: { text: context.join(" ") },
+                    parameters: { max_length: 250, temperature: 0.8, top_p: 0.9, do_sample: true }
+                })
+            });
+            
+            if (!response.ok) {
+                if (response.status === 503) {
+                    return "🔄 Модель загружается... Подожди 10 секунд и отправь ещё раз!";
+                }
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            let reply = data.generated_text || data[0]?.generated_text;
+            
+            if (reply && reply.includes(context.join(" "))) {
+                reply = reply.replace(context.join(" "), "").trim();
+            }
+            
+            if (!reply || reply.length < 2) {
+                reply = "Расскажи подробнее! 😊";
+            }
+            
+            return reply;
+        } catch (error) {
+            console.error('AI Error:', error);
+            return "Я здесь! Напиши что-нибудь ещё 🤖";
+        }
+    }
+    
+    // ========== УПРАВЛЕНИЕ ЧАТАМИ ==========
+    function createNewChat() {
+        if (!currentUser) return;
+        const chatId = Date.now().toString();
+        currentChatId = chatId;
+        chats[chatId] = {
+            id: chatId,
+            title: `Чат ${new Date().toLocaleString()}`,
+            created: Date.now(),
+            messages: [{ role: 'bot', content: 'Чем могу помочь сегодня? 😊' }]
+        };
+        saveUserChats(currentUser.email, chats);
+        renderChatList();
+        renderCurrentChat();
+    }
+    
+    function loadChat(chatId) {
+        if (!chats[chatId]) return;
+        currentChatId = chatId;
+        renderCurrentChat();
+        renderChatList();
+    }
+    
+    function deleteChat(chatId) {
+        if (confirm('Удалить этот чат?')) {
+            delete chats[chatId];
+            saveUserChats(currentUser.email, chats);
+            const chatIds = Object.keys(chats);
+            if (chatIds.length > 0) loadChat(chatIds[0]);
+            else createNewChat();
+            renderChatList();
+        }
+    }
+    
+    function renderChatList() {
+        const container = document.getElementById('chatList');
+        if (!container) return;
+        container.innerHTML = '';
+        const sorted = Object.values(chats).sort((a, b) => b.created - a.created);
+        sorted.forEach(chat => {
+            const div = document.createElement('div');
+            div.className = `chat-item ${currentChatId === chat.id ? 'active' : ''}`;
+            div.innerHTML = `<div class="chat-title">${escapeHtml(chat.title.substring(0, 35))}</div><div class="chat-date">${new Date(chat.created).toLocaleString()}</div>`;
+            div.onclick = () => loadChat(chat.id);
+            div.oncontextmenu = (e) => { e.preventDefault(); deleteChat(chat.id); };
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCurrentChat() {
+        if (!currentChatId || !chats[currentChatId]) return;
+        const container = document.getElementById('messagesArea');
+        const chat = chats[currentChatId];
+        container.innerHTML = '';
+        chat.messages.forEach(msg => {
+            addMessageToUI(msg.role, msg.content, false);
+        });
+        
+        if (chat.messages.length > 1 && chat.title.startsWith('Чат ')) {
+            const firstUserMsg = chat.messages.find(m => m.role === 'user');
+            if (firstUserMsg) {
+                chat.title = firstUserMsg.content.substring(0, 30) + '...';
+                saveUserChats(currentUser.email, chats);
+                renderChatList();
+            }
+        }
+    }
+    
+    function addMessageToUI(role, text, save = true) {
+        const container = document.getElementById('messagesArea');
+        const div = document.createElement('div');
+        div.className = `message ${role === 'user' ? 'user' : 'bot'}`;
+        div.innerHTML = `
+            <div class="avatar ${role === 'user' ? 'avatar-user' : 'avatar-bot'}">${role === 'user' ? '👤' : '🧠'}</div>
+            <div class="bubble ${role === 'user' ? 'bubble-user' : 'bubble-bot'}">${escapeHtml(text)}</div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        
+        if (save && currentChatId && chats[currentChatId]) {
+            chats[currentChatId].messages.push({ role, content: text });
+            saveUserChats(currentUser.email, chats);
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function showTyping() {
+        const container = document.getElementById('messagesArea');
+        const div = document.createElement('div');
+        div.className = 'message bot';
+        div.id = 'typingIndicator';
+        div.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot typing-indicator"><span></span><span></span><span></span></div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    function removeTyping() {
+        const el = document.getElementById('typingIndicator');
+        if (el) el.remove();
+    }
+    
+    async function handleSend() {
+        if (isLoading || !currentUser || !currentChatId) return;
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        input.value = '';
+        input.style.height = 'auto';
+        addMessageToUI('user', text, true);
+        
+        const chat = chats[currentChatId];
+        const history = chat.messages;
+        
+        isLoading = true;
+        document.getElementById('sendBtn').disabled = true;
+        showTyping();
+        
+        try {
+            removeTyping();
+            const container = document.getElementById('messagesArea');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            msgDiv.id = 'streamingMessage';
+            msgDiv.innerHTML = `<div class="avatar avatar-bot">🧠</div><div class="bubble bubble-bot" id="streamBubble">🤔 Думаю...</div>`;
+            container.appendChild(msgDiv);
+            const bubble = document.getElementById('streamBubble');
+            
+            const reply = await callAI(text, history);
+            
+            if (bubble) bubble.innerText = reply;
+            msgDiv.removeAttribute('id');
+            
+            if (currentChatId && chats[currentChatId]) {
+                chats[currentChatId].messages.push({ role: 'bot', content: reply });
+                saveUserChats(currentUser.email, chats);
+            }
+            
+            const currentChat = chats[currentChatId];
+            if (currentChat && currentChat.messages.length > 1 && currentChat.title.startsWith('Чат ')) {
+                const firstUserMsg = currentChat.messages.find(m => m.role === 'user');
+                if (firstUserMsg) {
+                    currentChat.title = firstUserMsg.content.substring(0, 30) + '...';
+                    saveUserChats(currentUser.email, chats);
+                    renderChatList();
+                }
+            }
+        } catch(err) {
+            removeTyping();
+            const errorDiv = document.getElementById('streamingMessage');
+            if (errorDiv) errorDiv.remove();
+            addMessageToUI('bot', '✨ Давай продолжим! Напиши что-нибудь ещё.', true);
+        } finally {
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+    }
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    document.getElementById('doLoginBtn').onclick = handleLogin;
+    document.getElementById('doRegisterBtn').onclick = handleRegister;
+    document.getElementById('showRegisterBtn').onclick = showRegisterForm;
+    document.getElementById('showLoginBtn').onclick = showLoginForm;
+    document.getElementById('logoutBtn').onclick = logout;
+    document.getElementById('newChatBtn').onclick = createNewChat;
+    document.getElementById('sendBtn').onclick = handleSend;
+    
+    const userInput = document.getElementById('userInput');
+    userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+    userInput.oninput = function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; };
+    
+    showLoginForm();
+</script>
+</body>
+</html>
